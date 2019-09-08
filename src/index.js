@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, Link, BrowserRouter as Router } from "react-router-dom";
+import { Route, NavLink, BrowserRouter as Router } from "react-router-dom";
 import Reports from "./view/reports/reports.js";
 import Home from "./view/home.js"
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
@@ -12,10 +11,10 @@ const routing = (
     <div>
       <ul>
         <li>
-          <Link to="/">Home</Link>
+          <NavLink exact activeClassName='Active' to="/">Home</NavLink>
         </li>
         <li>
-          <Link to="/reports/week">Reports</Link>
+          <NavLink activeClassName='Active' to="/reports/week">Reports</NavLink>
         </li>
       </ul>
       <Route exact path="/" component={Home} />

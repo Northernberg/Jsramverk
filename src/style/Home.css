@@ -1,25 +1,3 @@
-a,
-a:visited {
-  text-decoration: none;
-}
-
-a {
-  transition: width 2s;
-  
-}
-
-a:hover {
-  text-decoration: none;
-}
-
-li {
-  list-style: none;
-}
-
-ul {
-  display: flex;
-}
-
 .App {
   text-align: center;
 }

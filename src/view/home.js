@@ -1,10 +1,11 @@
 import React from 'react';
 import logo from '.././me.jpg';
+import '../style/Home.css';
 
 export default class Index extends React.Component {
   render() {
     return (
-        <div>
+        <div class='container'>
           <h1>Home</h1>
           <p> This is me, My name is Gustav and I am a third (and last) year student in Webprogramming. </p>
           <p> I like to code and develop web applications of any sorts. 
