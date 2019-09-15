@@ -1,27 +1,42 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Route, NavLink, BrowserRouter as Router } from "react-router-dom";
-import Reports from "./view/reports/reports.js";
-import Home from "./view/home.js"
+import {
+  Route,
+  NavLink,
+  BrowserRouter as Router,
+} from 'react-router-dom';
+import Reports from './view/reports/Reports.js';
+import Home from './view/Home.js';
+import { Registration } from './view/Registration.js';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
-    <Router>
+  <Router>
     <div>
-      <ul>
+      <ul className="navbar">
         <li>
-          <NavLink exact activeClassName='Active' to="/">Home</NavLink>
+          <NavLink exact activeClassName="Active" to="/">
+            Home
+          </NavLink>
         </li>
         <li>
-          <NavLink activeClassName='Active' to="/reports/week">Reports</NavLink>
+          <NavLink activeClassName="Active" to="/reports/week">
+            Reports
+          </NavLink>
+        </li>
+        <li>
+          <NavLink activeClassName="Active" to="/registration">
+            Registration
+          </NavLink>
         </li>
       </ul>
       <Route exact path="/" component={Home} />
       <Route path="/reports/week" component={Reports} />
+      <Route path="/registration" component={Registration} />
     </div>
   </Router>
-)
+);
 
 ReactDOM.render(routing, document.getElementById('root'));
 
