@@ -46,10 +46,11 @@ export const Registration = () => {
       email: '',
       password: '',
     },
+    month: 1,
+    day: 1,
+    year: 2019,
   });
-  function renderRedirect(event) {
-    console.log(formValues);
-
+  function handleSubmit(event) {
     event.preventDefault();
     let valid = true;
 
@@ -62,11 +63,26 @@ export const Registration = () => {
     Object.values(formValues.errors).forEach(
       val => val.length > 0 && (valid = false),
     );
-
-    setValues({
-      ...formValues,
-      redirect: valid,
-    });
+    const birth =
+      formValues.year.toString() +
+      '-' +
+      formValues.month.toString() +
+      '-' +
+      formValues.day.toString();
+    formValues.birthdate = birth;
+    if (valid) {
+      fetch('https/me-api.onlinesoppa.me/register', {
+        method: 'POST', // or 'PUT'
+        body: JSON.stringify(formValues), // data can be `string` or {object}!
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then(response =>
+          console.log('Success:', JSON.stringify(response)),
+        )
+        .catch(error => console.error('Error:', error));
+    }
   }
   function validateInput(event) {
     const target = event.target;
@@ -74,16 +90,14 @@ export const Registration = () => {
     switch (target.name) {
       case 'firstname':
         errors.firstname =
-          target.value.length < 5
-            ? 'First Name must be 5 characters long!'
+          target.value.length <= 0
+            ? 'First Name cannot be empty!'
             : '';
         break;
 
       case 'lastname':
         errors.lastname =
-          target.value.length < 5
-            ? 'Last Name must be 5 characters long!'
-            : '';
+          target.value.length <= 0 ? 'Lastname cannot be empty!' : '';
         break;
 
       case 'email':
@@ -107,6 +121,7 @@ export const Registration = () => {
       errors,
     });
   }
+
   console.log(formValues);
   if (formValues.redirect) {
     console.log(formValues);
@@ -116,7 +131,7 @@ export const Registration = () => {
   return (
     <div className="container">
       <h1>Registration</h1>
-      <form className={classes.form}>
+      <form className={classes.form} onSubmit={handleSubmit}>
         <Grid className={classes.container}>
           <TextField
             label="Firstname"
@@ -157,12 +172,11 @@ export const Registration = () => {
           onChange={validateInput}
           required
         ></TextField>
-        <DatePicker></DatePicker>
+        <DatePicker updateBirth={validateInput}></DatePicker>
         <Button
           variant="contained"
           color="primary"
           className={classes.textField}
-          onClick={renderRedirect}
           type="submit"
         >
           Submit

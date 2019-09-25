@@ -24,10 +24,10 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const DatePicker = () => {
+export const DatePicker = props => {
   const startDay = Array.from({ length: 30 }, (e, i) => ++i);
   const [dateValues, setValues] = useState({
-    month: 'January',
+    month: 1,
     day: 1,
     year: 2019,
     days: startDay,
@@ -35,61 +35,77 @@ export const DatePicker = () => {
   });
   const months = [
     {
+      num: 1,
       month: 'January',
       days: 31,
     },
     {
+      num: 2,
       month: 'February',
       days: 28,
     },
     {
+      num: 3,
       month: 'Mars',
       days: 31,
     },
     {
+      num: 4,
       month: 'April',
       days: 30,
     },
     {
+      num: 5,
       month: 'May',
       days: 31,
     },
     {
+      num: 6,
       month: 'June',
       days: 30,
     },
     {
+      num: 7,
       month: 'Juli',
       days: 31,
     },
     {
+      num: 8,
       month: 'August',
       days: 31,
     },
     {
+      num: 9,
       month: 'September',
       days: 30,
     },
     {
+      num: 10,
       month: 'Oktober',
       days: 31,
     },
     {
+      num: 11,
       month: 'November',
       days: 30,
     },
     {
+      num: 12,
       month: 'December',
       days: 31,
     },
   ];
   const years = Array.from({ length: 100 }, (e, i) => 2019 - i);
   const classes = useStyles();
+  function handleInput(event) {
+    handlingDays(event);
+    props.updateBirth(event);
+  }
   function handlingDays(event) {
     const target = event.target;
 
     const daysLen = months.filter(o => {
-      return o.month === dateValues.month;
+      return o.num === dateValues.month;
     });
     const amountDays = Array.from(
       { length: daysLen[0].days },
@@ -109,7 +125,6 @@ export const DatePicker = () => {
       valid: isValid,
     });
   }
-  console.log(dateValues);
   return (
     <Grid className={classes.container}>
       <TextField
@@ -119,7 +134,7 @@ export const DatePicker = () => {
         margin="normal"
         name="year"
         value={dateValues.year}
-        onChange={handlingDays}
+        onChange={handleInput}
         className={classes.textField}
       >
         {years.map(y => (
@@ -136,7 +151,7 @@ export const DatePicker = () => {
         margin="normal"
         value={dateValues.month}
         className={classes.textField}
-        onChange={handlingDays}
+        onChange={handleInput}
         SelectProps={{
           MenuProps: {
             className: classes.menu,
@@ -144,7 +159,7 @@ export const DatePicker = () => {
         }}
       >
         {months.map(m => (
-          <MenuItem key={m.month} value={m.month}>
+          <MenuItem key={m.month} value={m.num}>
             {m.month}
           </MenuItem>
         ))}
@@ -157,7 +172,7 @@ export const DatePicker = () => {
         helperText="Day"
         margin="normal"
         className={classes.textField}
-        onChange={handlingDays}
+        onChange={handleInput}
         value={dateValues.day}
       >
         {dateValues.hasOwnProperty('days') ? (
