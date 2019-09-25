@@ -33,7 +33,7 @@ export const ReportView = ({ match }) => {
     event.preventDefault();
     console.log('yo');
     console.log(textData);
-    fetch('https/me-api.onlinesoppa.me/reports/update', {
+    fetch('https://me-api.onlinesoppa.me/reports/update', {
       method: 'POST', // or 'PUT',
       body: JSON.stringify(textData),
       headers: {
@@ -53,7 +53,7 @@ export const ReportView = ({ match }) => {
   };
   useEffect(() => {
     fetch(
-      'https/me-api.onlinesoppa.me/reports/week/' + match.params.id,
+      'https://me-api.onlinesoppa.me/reports/week/' + match.params.id,
       {
         method: 'GET', // or 'PUT'
         headers: {

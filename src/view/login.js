@@ -37,7 +37,7 @@ export const Login = props => {
   console.log(formValues);
   function handleSubmit(event) {
     event.preventDefault();
-    fetch('https/me-api.onlinesoppa.me/login', {
+    fetch('https://me-api.onlinesoppa.me/login', {
       method: 'POST', // or 'PUT'
       body: JSON.stringify(formValues), // data can be `string` or {object}!
       headers: {

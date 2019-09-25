@@ -71,7 +71,7 @@ export const Registration = () => {
       formValues.day.toString();
     formValues.birthdate = birth;
     if (valid) {
-      fetch('https/me-api.onlinesoppa.me/register', {
+      fetch('https://me-api.onlinesoppa.me/register', {
         method: 'POST', // or 'PUT'
         body: JSON.stringify(formValues), // data can be `string` or {object}!
         headers: {
