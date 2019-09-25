@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MarkdownParser } from '../../Markdown.js';
 import { Button, TextField, makeStyles } from '@material-ui/core';
+import { NavLink } from 'react-router-dom';
 
 const useStyles = makeStyles({
   textField: {
@@ -14,6 +15,7 @@ export const ReportView = ({ match }) => {
     data: '',
     showEditor: false,
     week: match.params.id,
+    empty: false,
   });
   const handleReport = event => {
     setText({
@@ -31,9 +33,7 @@ export const ReportView = ({ match }) => {
   };
   const handleSubmit = event => {
     event.preventDefault();
-    console.log('yo');
-    console.log(textData);
-    fetch('https://me-api.onlinesoppa.me/reports/update', {
+    fetch(process.env.REACT_APP_API_ENDPOINT + '/reports/update', {
       method: 'POST', // or 'PUT',
       body: JSON.stringify(textData),
       headers: {
@@ -43,28 +43,42 @@ export const ReportView = ({ match }) => {
     })
       .then(res => res.json())
       .then(response => {
-        console.log('Success:', JSON.stringify(response));
-        setText({
-          ...textData,
-          data: response.data,
-        });
+        console.log(JSON.stringify(response));
+        if (response.ok) {
+          setText({
+            ...textData,
+            data: response.data,
+          });
+        }
       })
       .catch(error => console.error('Error:', error));
   };
   useEffect(() => {
     fetch(
-      'https://me-api.onlinesoppa.me/reports/week/' + match.params.id,
+      process.env.REACT_APP_API_ENDPOINT +
+        '/reports/week/' +
+        match.params.id,
       {
         method: 'GET', // or 'PUT'
         headers: {
           'Content-Type': 'application/json',
-          'x-access-token': localStorage.getItem('token'),
+          'x-access-token': localStorage.getItem('JWT'),
         },
       },
     )
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          setText({
+            data: '',
+            empty: true,
+          });
+          throw new Error('Report is empty');
+        }
+      })
       .then(response => {
-        console.log('Success:', JSON.stringify(response));
+        console.log(JSON.stringify(response));
         setText({
           week: match.params.id,
           data: response.data,
@@ -76,7 +90,7 @@ export const ReportView = ({ match }) => {
     <div>
       <h1> Week {match.params.id}</h1>
       <MarkdownParser content={textData.data}></MarkdownParser>
-      {textData.showEditor ? (
+      {textData.showEditor && (
         <form>
           <TextField
             className={classes.textField}
@@ -98,6 +112,12 @@ export const ReportView = ({ match }) => {
             Save
           </Button>
         </form>
+      )}
+      {textData.empty ? (
+        <NavLink to="/reports">
+          {' '}
+          Report is empty. Go back and create report.{' '}
+        </NavLink>
       ) : (
         <Button
           onClick={onEdit}

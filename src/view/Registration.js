@@ -71,16 +71,14 @@ export const Registration = () => {
       formValues.day.toString();
     formValues.birthdate = birth;
     if (valid) {
-      fetch('https://me-api.onlinesoppa.me/register', {
+      fetch(process.env.REACT_APP_API_ENDPOINT + '/register', {
         method: 'POST', // or 'PUT'
         body: JSON.stringify(formValues), // data can be `string` or {object}!
         headers: {
           'Content-Type': 'application/json',
         },
       })
-        .then(response =>
-          console.log('Success:', JSON.stringify(response)),
-        )
+        .then(response => console.log(JSON.stringify(response)))
         .catch(error => console.error('Error:', error));
     }
   }

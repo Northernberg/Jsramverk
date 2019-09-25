@@ -34,17 +34,16 @@ export const Reports = ({ match }) => {
   console.log(reportData);
   function handleSubmit(event) {
     event.preventDefault();
-    fetch('https://me-api.onlinesoppa.me/reports', {
+    fetch(process.env.REACT_APP_API_ENDPOINT + '/reports', {
       method: 'POST', // or 'PUT'
       body: JSON.stringify(reportData), // data can be `string` or {object}!
       headers: {
         'Content-Type': 'application/json',
+        'x-access-token': localStorage.getItem('JWT'),
       },
     })
       .then(res => res.json())
-      .then(response =>
-        console.log('Success:', JSON.stringify(response)),
-      )
+      .then(response => console.log(JSON.stringify(response)))
       .catch(error => console.error('Error:', error));
   }
   return (

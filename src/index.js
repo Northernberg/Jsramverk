@@ -27,7 +27,7 @@ const Routing = () => {
   };
   return (
     <Router history={history}>
-      <Navbar auth={auth} logout={logout}></Navbar>;
+      <Navbar auth={auth} logout={logout}></Navbar>
       <Route exact path="/" component={Home} />
       <Route exact path="/reports" component={Reports} />
       <Route path="/reports/week/:id" component={ReportView} />

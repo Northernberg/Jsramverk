@@ -11,7 +11,6 @@ function Week2() {
         </a>
       </p>
       <p>
-        {' '}
         What I thought about the registration form was to make it
         responsive and clean design. I put the firstname and lastname
         fields on the same row so that they would be more coherent.

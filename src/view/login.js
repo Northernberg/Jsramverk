@@ -24,7 +24,6 @@ export const Login = props => {
   const [formValues, setValues] = useState({
     email: '',
     password: '',
-    redirect: false,
   });
   function handleChange(event) {
     event.preventDefault();
@@ -37,22 +36,24 @@ export const Login = props => {
   console.log(formValues);
   function handleSubmit(event) {
     event.preventDefault();
-    fetch('https://me-api.onlinesoppa.me/login', {
+    fetch(process.env.REACT_APP_API_ENDPOINT + '/login', {
       method: 'POST', // or 'PUT'
       body: JSON.stringify(formValues), // data can be `string` or {object}!
       headers: {
         'Content-Type': 'application/json',
       },
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw new Error('Error, unable to login');
+        }
+      })
       .then(response => {
-        console.log('Success:', JSON.stringify(response));
+        console.log(JSON.stringify(response));
         localStorage.setItem('JWT', response.token);
         localStorage.setItem('name', response.username);
-        setValues({
-          ...formValues,
-          redirect: true,
-        });
         props.login();
         props.history.push('/');
       })
@@ -84,7 +85,6 @@ export const Login = props => {
           color="primary"
           variant="contained"
         >
-          {' '}
           Submit
         </Button>
         <NavLink activeClassName="Active" to="/register">
