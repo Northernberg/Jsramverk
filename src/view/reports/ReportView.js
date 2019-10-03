@@ -87,7 +87,7 @@ export const ReportView = ({ match }) => {
       .catch(error => console.error('Error:', error));
   }, [match.params.id]);
   return (
-    <div>
+    <div class="reportInfo">
       <h1> Week {match.params.id}</h1>
       <MarkdownParser content={textData.data}></MarkdownParser>
       {textData.showEditor && (
