@@ -2,6 +2,7 @@
 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Northernberg/Jsramverk/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Northernberg/Jsramverk/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/Northernberg/Jsramverk/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Northernberg/Jsramverk/build-status/master)
+
 Clone the repository:
 ### Git Clone git@github.com:Northernberg/Jsramverk.git
 
