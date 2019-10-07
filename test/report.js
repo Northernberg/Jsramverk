@@ -1,6 +1,7 @@
 const assert = require('assert');
 const test = require('selenium-webdriver/testing');
 const { By, until } = require('selenium-webdriver');
+require('chromedriver');
 const webdriver = require('selenium-webdriver');
 
 let browser;
@@ -9,7 +10,7 @@ test.describe('Reports', function() {
     test.beforeEach(function(done) {
         this.timeout(20000);
         browser = new webdriver.Builder()
-            .withCapabilities(webdriver.Capabilities.chrome())
+            .forBrowser('chrome')
             .build();
 
         browser.get('https://onlinesoppa.me/');
