@@ -121,6 +121,26 @@ test.describe('Reports', function() {
 
         browser.wait(until.elementLocated(By.xpath('//h2[1]')), 5000);
 
+        // Create test report
+        browser
+            .findElement(By.css('#select-week'))
+            .then(function(element) {
+                element.click();
+            });
+
+        browser
+            .findElement(By.xpath('//li[@data-value = 5]'))
+            .then(function(element) {
+                element.click();
+            });
+
+        browser.sleep(1000);
+        browser
+            .findElement(By.xpath('//button[@type="submit"]'))
+            .then(function(element) {
+                element.click();
+            });
+
         //Press 5th week's report
         browser
             .findElement(By.xpath('//a[@href = "/reports/week/5"]'))
@@ -161,6 +181,16 @@ test.describe('Reports', function() {
             });
 
         browser.wait(until.elementLocated(By.xpath('//h1[1]')), 2000);
+
+        browser
+            .findElement(
+                By.xpath(
+                    '//button//span[contains(text(), "Delete")]',
+                ),
+            )
+            .then(function(element) {
+                element.click();
+            });
         done();
     });
 });
