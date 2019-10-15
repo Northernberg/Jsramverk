@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import {
     Button,
@@ -24,6 +24,7 @@ const useStyles = makeStyles(() => ({
         padding: '5px',
         height: '500px',
         overflow: 'auto',
+        scrollBehavior: 'smooth',
     },
     button: {
         marginTop: '16px',
@@ -34,39 +35,91 @@ const useStyles = makeStyles(() => ({
 const socket = io(process.env.REACT_APP_CHAT_ENDPOINT);
 export const Chat = () => {
     const classes = useStyles();
+    const chatBox = useRef(null);
     const [chatData, setChatData] = useState({
         message: '',
         allUsers: [],
     });
     const [allChat, setallChat] = useState({
         messages: [],
-        broadcast: '',
+        loaded: false,
     });
     const [user, setUser] = useState({
         isConnected: false,
         nickname: '',
     });
-
     useEffect(() => {
-        socket.on('chat message', res => {
-            let list = allChat.messages;
-            list.push(res);
-            setallChat({
-                messages: list,
-            });
-        });
-        socket.on('get users', users => {
-            setChatData({
-                allUsers: users,
-            });
-        });
-        socket.on('broadcast', msg => {
-            let list = allChat.messages;
-            list.push(msg);
-            setallChat({
-                messages: list,
-            });
-        });
+        socket.connect(process.env.REACT_APP_CHAT_ENDPOINT);
+    }, []);
+    const saveChat = msg => {
+        fetch(process.env.REACT_APP_API_ENDPOINT + '/chat/insert', {
+            method: 'POST',
+            body: JSON.stringify(msg),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    throw new Error('Error, unable to insert chat');
+                }
+            })
+            .then(response => {
+                console.log(response);
+            })
+            .catch(err => console.error(err));
+    };
+    useEffect(() => {
+        fetch(process.env.REACT_APP_API_ENDPOINT + '/chat', {
+            method: 'GET', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                } else {
+                    throw new Error('Error, unable to fetch chat');
+                }
+            })
+            .then(response => {
+                console.log(response);
+                setallChat({
+                    ...allChat,
+                    messages: response,
+                    loaded: true,
+                });
+                socket.on('chat message', res => {
+                    saveChat({ message: res });
+                });
+                socket.on('all chat', res => {
+                    response.unshift(res);
+                    setallChat({
+                        messages: response,
+                    });
+                });
+                socket.on('get users', users => {
+                    setChatData({
+                        allUsers: users,
+                    });
+                });
+                socket.on('broadcast', msg => {
+                    response.unshift(msg);
+                    setallChat({
+                        messages: response,
+                    });
+                });
+                socket.on('save broadcast', msg => {
+                    saveChat({ message: msg });
+                });
+            })
+            .catch(err => console.error(err));
+        return () => {
+            socket.close();
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -76,26 +129,47 @@ export const Chat = () => {
             message: event.target.value,
         });
     };
+    const nickHandleKeyDown = event => {
+        if (event.key === 'Enter') {
+            sendLoginChat(event);
+        }
+    };
+    const messageHandleKeyDown = event => {
+        if (event.key === 'Enter') {
+            sendMessage(event);
+        }
+    };
     const sendMessage = event => {
-        socket.emit('chat message', chatData.message);
+        var time = new Date();
+        socket.emit('chat message', {
+            message: chatData.message,
+            date: time.toLocaleTimeString().slice(0, -3),
+        });
+        chatBox.current.scrollTop = 1;
     };
     const loginChat = event => {
         setUser({
             ...user,
             nickname: event.target.value,
         });
+        localStorage.setItem('chatUser', user.nickname);
     };
     const sendLoginChat = event => {
-        socket.emit('set nickname', user.nickname);
-        socket.on('set nickname', msg => {
-            console.log(msg);
-            setUser({
-                ...user,
-                isConnected: true,
+        if (user.nickname.length > 0) {
+            var time = new Date();
+            socket.emit('set nickname', {
+                nick: user.nickname,
+                date: time.toLocaleTimeString().slice(0, -3),
             });
-        });
+            socket.on('set nickname', msg => {
+                console.log(msg);
+                setUser({
+                    ...user,
+                    isConnected: true,
+                });
+            });
+        }
     };
-    console.log(chatData);
     return (
         <Container maxWidth="sm">
             {chatData.allUsers.length > 0 && (
@@ -117,8 +191,10 @@ export const Chat = () => {
                         rows="10"
                         margin="normal"
                         className={classes.messageField}
+                        onKeyDown={messageHandleKeyDown}
                     />
                     <Button
+                        id="sendMessage"
                         color="primary"
                         variant="contained"
                         onClick={sendMessage}
@@ -136,18 +212,25 @@ export const Chat = () => {
                         rows="10"
                         onChange={loginChat}
                         className={classes.messageField}
+                        onKeyDown={nickHandleKeyDown}
+                        disabled={!allChat.loaded}
                     />
                     <Button
+                        id="sendNickname"
                         color="primary"
                         variant="contained"
                         onClick={sendLoginChat}
                         className={classes.button}
+                        disabled={!allChat.loaded}
                     >
                         Send
                     </Button>
                 </div>
             )}
-            <div className={`${classes.outlined} ${classes.chat}`}>
+            <div
+                className={`${classes.outlined} ${classes.chat}`}
+                ref={chatBox}
+            >
                 {allChat.messages.map(msg => (
                     <p key={msg.id}>
                         <b>{msg.time}</b> <b>{msg.user}:</b>{' '}
