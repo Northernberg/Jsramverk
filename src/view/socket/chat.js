@@ -31,8 +31,7 @@ const useStyles = makeStyles(() => ({
         marginBottom: '8px',
     },
 }));
-
-const socket = io(process.env.REACT_APP_CHAT_ENDPOINT);
+let socket;
 export const Chat = () => {
     const classes = useStyles();
     const chatBox = useRef(null);
@@ -49,8 +48,9 @@ export const Chat = () => {
         nickname: '',
     });
     useEffect(() => {
-        socket.connect(process.env.REACT_APP_CHAT_ENDPOINT);
+        socket = io(process.env.REACT_APP_CHAT_ENDPOINT);
     }, []);
+    console.log(allChat);
     const saveChat = msg => {
         fetch(process.env.REACT_APP_API_ENDPOINT + '/chat/insert', {
             method: 'POST',
@@ -118,7 +118,7 @@ export const Chat = () => {
             })
             .catch(err => console.error(err));
         return () => {
-            socket.close();
+            socket.disconnect();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -231,8 +231,8 @@ export const Chat = () => {
                 className={`${classes.outlined} ${classes.chat}`}
                 ref={chatBox}
             >
-                {allChat.messages.map(msg => (
-                    <p key={msg.id}>
+                {allChat.messages.map((msg, i) => (
+                    <p key={i}>
                         <b>{msg.time}</b> <b>{msg.user}:</b>{' '}
                         {msg.message}
                     </p>
